@@ -22,6 +22,25 @@ def empleado(id_nomina):
     return 'Consultando empleado # ' + str(id_nomina)
 
 
+#SECCION PARA INICIALIZAR LOS SERVICIOS A UTILIZAR GET POST ETC
+
+#METODO GET
+@app.route('/opciones/',methods=['GET'])
+def opciones():
+    opciones={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
+              "opciones":[{"idOpcion":1,"nombre":"LEONARDO","descripcion":"conocido"}]}
+    return json.dumps(opciones)
+
+@app.route('/opciones/<int:id>',methods=['GET'])
+def opcion(id):
+    opcion={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
+            "opciones":[{"idOpcion":id,"nombre":"LEONARDO","descripcion":"conocido"}]}
+    return json.dumps(opcion)
+
+
+#METODO POST
+
+
 if __name__=='__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
 
