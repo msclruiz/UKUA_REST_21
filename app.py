@@ -7,7 +7,7 @@ from Dao import empleados,db
 app=Flask(__name__)
 
 #CONFIGURACION DE LA BASE DE DATOS CON SQLALQUEMY
-app.config['SQLALCHEMY_DATABAS_URI']='mysql+pymysql://coordinadorRH:Hola.123@localhost:3306/ukuadb'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://coordinadorRH:Hola.123@localhost:3306/ukuadb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 
@@ -35,14 +35,14 @@ def opciones():
     return json.dumps(opciones)
 
 @app.route('/empleados/',methods=['GET'])
-def empleados():
-    empleados={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
+def eempleados():
+    eempleados={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
               "opciones":[{"idOpcion":1,"nombre":"LEONARDO","descripcion":"conocido"}]}
-    e=empleados()
-    lista=e.consultaGeneral()
+    o=empleados()
+    lista=o.consultaGeneral()
     for objeto in lista:
         print(objeto.nombre)
-    return json.dumps(empleados)
+    return json.dumps(eempleados)
 
 @app.route('/opciones/<int:id>',methods=['GET'])
 def opcion(id):
