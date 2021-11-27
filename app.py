@@ -1,5 +1,8 @@
 from flask import Flask, request, jsonify
 import json
+from Dao import empleados,db
+
+
 
 app=Flask(__name__)
 
@@ -13,9 +16,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 def inicio():
     return 'Escuchando el servicio REST de SISTEMA: Dispersion de Nomina'
 
-@app.route('/empleados')
-def empleados():
-    return 'Empleados'
+#@app.route('/empleados')
+#def empleados():
+#    return 'Empleados'
 
 @app.route('/empleados/<int:id_nomina>')
 def empleado(id_nomina):
@@ -30,6 +33,13 @@ def opciones():
     opciones={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
               "opciones":[{"idOpcion":1,"nombre":"LEONARDO","descripcion":"conocido"}]}
     return json.dumps(opciones)
+
+@app.route('/empleados/',methods=['GET'])
+def empleados():
+    empleados={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
+              "opciones":[{"idOpcion":1,"nombre":"LEONARDO","descripcion":"conocido"}]}
+    e=empleados()
+    return json.dumps(empleados)
 
 @app.route('/opciones/<int:id>',methods=['GET'])
 def opcion(id):
