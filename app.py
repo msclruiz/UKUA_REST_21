@@ -53,7 +53,7 @@ def modificarOpcion():
     return json.dumps(salida)
 
 #METODO DELETE
-@app.route('/opciones', methods=['DELETE'])
+@app.route('/opciones/<int:id>', methods=['DELETE'])
 def eliminaOpcion(id):
     salida={"estatus":"ok","mensaje":"OPCION # " + str(id) + " ELIMINADA CON EXITO"}
     return  jsonify(salida)
