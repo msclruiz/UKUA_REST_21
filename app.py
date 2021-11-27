@@ -3,6 +3,12 @@ import json
 
 app=Flask(__name__)
 
+#CONFIGURACION DE LA BASE DE DATOS CON SQLALQUEMY
+app.config['SQLALCHEMY_DATABAS_URI']='mysql+pymysql://coordinadorRH:Hola.123@localhost:3306/ukuadb'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+
+
+
 @app.route('/')
 def inicio():
     return 'Escuchando el servicio REST de SISTEMA: Dispersion de Nomina'
