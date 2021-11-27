@@ -39,6 +39,9 @@ def empleados():
     empleados={"estatus":"ok","mensaje":"LISTADO DE OPCIONES",
               "opciones":[{"idOpcion":1,"nombre":"LEONARDO","descripcion":"conocido"}]}
     e=empleados()
+    lista=e.consultaGeneral()
+    for objeto in lista:
+        print(objeto.nombre)
     return json.dumps(empleados)
 
 @app.route('/opciones/<int:id>',methods=['GET'])
@@ -69,5 +72,6 @@ def eliminaOpcion(id):
     return  jsonify(salida)
 
 if __name__=='__main__':
+    db.init_app(app)
     app.run(debug=True, host='0.0.0.0', port=5000)
 
