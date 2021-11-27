@@ -52,7 +52,11 @@ def modificarOpcion():
     salida={"esetatus":"ok","mensaje":"OPCION MODIFICADA CON EXITO"}
     return json.dumps(salida)
 
-
+#METODO DELETE
+@app.route('/opciones', methods=['DELETE'])
+def eliminaOpcion(id):
+    salida={"estatus":"ok","mensaje":"OPCION # " + str(id) + " ELIMINADA CON EXITO"}
+    return  jsonify(salida)
 
 if __name__=='__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
