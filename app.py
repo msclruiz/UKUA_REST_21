@@ -39,6 +39,19 @@ def opcion(id):
 
 
 #METODO POST
+@app.route('/opciones/', methods=['POST'])
+def registroOpcion():
+    opcion = request.get_json()
+    salida = {"estatus":"ok", "mensaje":"OPCION REGISTRADA CON EXITO"}
+    return json.dumps(salida)
+
+#METODO PUT
+@app.route('/opciones/', methods=['PUT'])
+def modificarOpcion():
+    opcion=request.get_json()
+    salida={"esetatus":"ok","mensaje":"OPCION MODIFICADA CON EXITO"}
+    return json.dumps(salida)
+
 
 
 if __name__=='__main__':
