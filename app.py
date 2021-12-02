@@ -1,89 +1,100 @@
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+
 import json
-from Dao import empleados, db
+#from Dao import empleados, db
 
 app = Flask(__name__)
-
-# CONFIGURACION DE LA BASE DE DATOS CON SQLALQUEMY
+#CADENA DE CONEXION
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345@localhost:3306/ukuadb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+#INSTANCIAR CONEXION
+db=SQLAlchemy(app)
+ma= Marshmallow(app)
 
-@app.route('/')
-def inicio():
-    return 'Escuchando el servicio REST de SISTEMA: Dispersion de Nomina'
+#CREACION DE LA TABLA Y LA CLASE
+class Categoria(db.Model):
+    cat_id = db.Column(db.Integer, primary_key=True)
+    cat_nom = db.Column(db.String(100))
+    cat_desp = db.Column(db.String(100))
 
+#creando el constructor
+    def __init__(self, cat_nom, cat_desp):
+        self.cat_nom = cat_nom
+        self.cat_desp = cat_desp
 
-# @app.route('/empleados')
-# def empleados():
-#    return 'Empleados'
+db.create_all()
 
-@app.route('/empleados/<int:id_nomina>')
-def empleado(id_nomina):
-    return 'Consultando empleado # ' + str(id_nomina)
+#creando el escquema
+class CategoriaSchema(ma.Schema):
+    class Meta:
+        fields = ('cat_id','cat_nom','cat_desp')
 
+#cuando es una sola respuesta
+categoria_schema = CategoriaSchema()
 
-# SECCION PARA INICIALIZAR LOS SERVICIOS A UTILIZAR GET POST ETC
+#cuando sean muchas respuestas
+categorias_schema = CategoriaSchema(many=True)
 
-# METODO GET
-@app.route('/opciones/', methods=['GET'])
-def opciones():
-    opciones = {"estatus": "ok", "mensaje": "LISTADO DE OPCIONES",
-                "opciones": [{"idOpcion": 1, "nombre": "LEONARDO", "descripcion": "conocido"}]}
-    return json.dumps(opciones)
+#GET ##########################################
+@app.route('/categorias', methods=['GET'])
+def get_categorias():
+    all_categorias = Categoria.query.all()
+    result = categorias_schema.dump(all_categorias)
+    return jsonify(result)
 
-1
-@app.route('/empleados/', methods=['GET'])
-def Empleados():
-    o = empleados()
-    lista = o.consultaGeneral()
-    return lista
-
-#   Empleados = {"estatus": "ok", "mensaje": "LISTADO DE OPCIONES",
-#                 "opciones": [{"id_nomina": 97420411, "nombre": "LEONARDO", "direccion": "conocido"}]}
-
-
-#    for objeto in lista:
-#        print(objeto.nombre)
-#    return json.dumps(Empleados)
-#     return lista
-
-
-
-@app.route('/opciones/<int:id>', methods=['GET'])
-def opcion(id):
-    opcion = {"estatus": "ok", "mensaje": "LISTADO DE OPCIONES",
-              "opciones": [{"idOpcion": id, "nombre": "LEONARDO", "descripcion": "conocido"}]}
-    return json.dumps(opcion)
+#get x id #######################
+@app.route('/categorias/<id>', methods=['GET'])
+def get_categoria_x_id(id):
+    una_categoria = Categoria.query.get(id)
+    return categoria_schema.jsonify(una_categoria)
 
 
-# METODO POST
-@app.route('/opciones/', methods=['POST'])
-def registroOpcion():
-    opcion = request.get_json()
-    salida = {"estatus": "ok", "mensaje": "OPCION REGISTRADA CON EXITO"}
-    return json.dumps(salida)
+#POST ##################
+@app.route('/categorias', methods=['POST'])
+def insert_categoria():
+    data = request.get_json(force=True)
+    cat_nom = data['cat_nom']
+    cat_desp = data['cat_desp']
+    nuevocategoria = Categoria(cat_nom, cat_desp)
+    #insertando el registro
+    db.session.add(nuevocategoria)
+    db.session.commit()
+    return categoria_schema.jsonify(nuevocategoria)
 
 
-# METODO PUT
-@app.route('/opciones/', methods=['PUT'])
-def modificarOpcion():
-    opcion = request.get_json()
-    salida = {"esetatus": "ok", "mensaje": "OPCION MODIFICADA CON EXITO"}
-    return json.dumps(salida)
+#PUT ########################
+@app.route('/categorias/<id>', methods=['PUT'])
+def update_categoria(id):
+    actualizarcategoria= Categoria.query.get(id)
+    data = request.get_json(force=True)
+    cat_nom = data['cat_nom']
+    cat_desp = data['cat_desp']
+
+    actualizarcategoria.cat_nom = cat_nom
+    actualizarcategoria.cat_desp = cat_desp
+
+    db.session.commit()
+
+    return categoria_schema.jsonify(actualizarcategoria)
+
+#delete ####
+@app.route('/categorias/<id>', methods=['DELETE'])
+def delete_categoria(id):
+    eliminarcategoria = Categoria.query.get(id)
+    db.session.delete(eliminarcategoria)
+    db.session.commit()
+    return categoria_schema.jsonify(eliminarcategoria)
 
 
-# METODO DELETE
-@app.route('/opciones/<int:id>', methods=['DELETE'])
-def eliminaOpcion(id):
-    salida = {"estatus": "ok", "mensaje": "OPCION # " + str(id) + " ELIMINADA CON EXITO"}
-    return jsonify(salida)
 
 
+@app.route('/',methods=['GET'])
+def index():
+    return jsonify({'Mensaje':'BIENVENIDO AL SISTEMA DE EMPLEADOS REST'})
 
 
-
-
-if __name__ == '__main__':
-    db.init_app(app)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__=="__main__":
+    app.run(debug=True)
